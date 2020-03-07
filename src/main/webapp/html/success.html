@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <script src="/js/jquery.3.4.1.js"></script>
+    <script>
+        $(document).ready(function(){
+            $.ajax({
+                url: "/resume/list",
+                type: 'get',
+                contentType: "application/json;charset=utf-8",
+                data:{},
+                success: function(result){
+                    if(result.success){
+                      var resultList= result.data;
+                        $.each(resultList,function(index,resume){
+                           var  resumeLine='<div><li id='+resume.id+'>'+resume.name+'&emsp;&emsp;&emsp;'+resume.address+'&emsp;&emsp;&emsp;'+resume.phone+'</li><input type=\'button\' onclick=removeResume('+resume.id+')  value="删除"/></div>';
+                           $('#resumeList').append(resumeLine);
+                        });
+                    }else{
+                        alert(result.errorMsg);
+                    }
+                }
+            });
+
+            $("#addResume").click(function(){
+                $.ajax({
+                    url: "/resume/save",
+                    type: 'post',
+                    contentType: "application/json;charset=utf-8",
+                    data:JSON.stringify({
+                        name:$("#name").val(),
+                        address:$("#address").val(),
+                        phone:$("#phone").val()
+                    }),
+                    success: function(result) {
+                        if (result.success) {
+                            alert('新增成功');
+                            window.location.reload();
+                        }else{
+                            alert(result.errorMsg);
+                        }
+                    }
+                })
+
+            })
+
+
+
+        });
+        //删除简历
+        function removeResume(id) {
+            $.ajax({
+                url: "/resume/remove/"+id,
+                type: 'post',
+                contentType: "application/json;charset=utf-8",
+                data:{},
+                success:function (result) {
+                    if(result.success){
+                        alert("删除成功!");
+                        window.location.reload();
+                    } else {
+                        alert(result.errorMsg);
+                    }
+                }
+            });
+        }
+
+
+
+
+    </script>
+</head>
+<body>
+<h2>Welcome!</h2>
+<h2>简历列表</h2>
+<ol id="resumeList">
+    <div>姓名&emsp;&emsp;&emsp;地址&emsp;&emsp;&emsp;电话</div>
+
+
+</ol>
+
+<h2>简历新增</h2>
+<div>
+    姓名:<input type="text" id="name"/>
+    地址:<input type="text" id="address"/>
+    电话:<input type="text" id="phone"/>
+    <input type="button" value="新增" id="addResume">
+</div>
+
+
+</body>
+</html>
